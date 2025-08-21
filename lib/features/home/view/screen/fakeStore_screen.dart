@@ -1,35 +1,41 @@
-import 'package:dio/dio.dart';
+import 'package:api_app/features/home/model/clothes_model.dart';
+import 'package:api_app/features/home/model/dataclothes.dart';
+import 'package:api_app/features/home/view/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class FakestoreScreen extends StatelessWidget {
-  FakestoreScreen({super.key});
-
-  Future<List<dynamic>> getData() async {
-    Dio dio = Dio();
-    final response = await dio.get('https://fakestoreapi.com/products');
-    return response.data;
-  }
+  const FakestoreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 167, 214, 252),
       appBar: AppBar(
+        actions: [
+          Icon(Icons.search),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            },
+            icon: Icon(Icons.shopping_cart_checkout_sharp),
+          ),
+        ],
         title: const Text(
-          'Fake store closed',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-
+          'Clothes Store',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 167, 214, 252),
+        backgroundColor: Color.fromARGB(255, 255, 228, 228),
       ),
       body: FutureBuilder(
         future: getData(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final items = snapshot.data as List;
+            final items = snapshot.data as List<ClotheModel>;
             return ListView.builder(
               padding: const EdgeInsets.all(12),
               itemCount: items.length,
@@ -51,7 +57,7 @@ class FakestoreScreen extends StatelessWidget {
                             SizedBox(
                               width: 150,
                               child: Text(
-                                item["title"],
+                                item.title,
                                 maxLines: 1,
                                 style: const TextStyle(
                                   fontSize: 18,
@@ -72,7 +78,7 @@ class FakestoreScreen extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                item['category'],
+                                item.category,
                                 style: const TextStyle(color: Colors.white),
                               ),
                             ),
@@ -84,9 +90,18 @@ class FakestoreScreen extends StatelessWidget {
                           top: Radius.circular(16),
                         ),
                         child: Image.network(
-                          item["image"],
+                          item.image,
                           width: double.infinity,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 200,
+                              color: Colors.grey[300],
+                              child: const Center(
+                                child: Icon(Icons.error, color: Colors.red),
+                              ),
+                            );
+                          },
                         ),
                       ),
                       Padding(
@@ -95,7 +110,7 @@ class FakestoreScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item["category"],
+                              item.category,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -109,7 +124,7 @@ class FakestoreScreen extends StatelessWidget {
                                   color: Colors.green,
                                 ),
                                 Text(
-                                  item["price"].toString(),
+                                  item.price.toString(),
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Colors.green,
@@ -117,28 +132,28 @@ class FakestoreScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const Spacer(),
-                                if (item['rating']['rate'] <= 1)
+                                if (item.rating['rate'] <= 1)
                                   const Icon(Icons.star, color: Colors.yellow),
-                                if (item['rating']['rate'] >= 2 &&
-                                    item['rating']['rate'] < 3)
-                                  Row(
+                                if (item.rating['rate'] >= 2 &&
+                                    item.rating['rate'] < 3)
+                                  const Row(
                                     children: [
                                       Icon(Icons.star, color: Colors.yellow),
                                       Icon(Icons.star, color: Colors.yellow),
                                     ],
                                   ),
-                                if (item['rating']['rate'] > 3 &&
-                                    item['rating']['rate'] < 4)
-                                  Row(
+                                if (item.rating['rate'] >= 3 &&
+                                    item.rating['rate'] < 4)
+                                  const Row(
                                     children: [
                                       Icon(Icons.star, color: Colors.yellow),
                                       Icon(Icons.star, color: Colors.yellow),
                                       Icon(Icons.star, color: Colors.yellow),
                                     ],
                                   ),
-                                if (item['rating']['rate'] >= 4 &&
-                                    item['rating']['rate'] < 5)
-                                  Row(
+                                if (item.rating['rate'] >= 4 &&
+                                    item.rating['rate'] < 5)
+                                  const Row(
                                     children: [
                                       Icon(Icons.star, color: Colors.yellow),
                                       Icon(Icons.star, color: Colors.yellow),
@@ -146,8 +161,8 @@ class FakestoreScreen extends StatelessWidget {
                                       Icon(Icons.star, color: Colors.yellow),
                                     ],
                                   ),
-                                if (item['rating']['rate'] == 5)
-                                  Row(
+                                if (item.rating['rate'] == 5)
+                                  const Row(
                                     children: [
                                       Icon(Icons.star, color: Colors.yellow),
                                       Icon(Icons.star, color: Colors.yellow),
@@ -160,7 +175,7 @@ class FakestoreScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 6),
                             Text(
-                              item["description"],
+                              item.description,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -178,7 +193,7 @@ class FakestoreScreen extends StatelessWidget {
             );
           }
           if (snapshot.hasError) {
-            return Center(child: Text(snapshot.error.toString()));
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ListView.builder(

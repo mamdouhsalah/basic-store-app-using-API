@@ -1,6 +1,6 @@
-import 'package:api_app/features/home/view/screen/cart_screen.dart';
 import 'package:api_app/features/home/view/screen/fakeStore_screen.dart';
 import 'package:api_app/features/home/view/screen/labtop_screen.dart';
+import 'package:api_app/features/home/view/screen/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int currentIndex = 0;
-  List<Widget> screen = [LabtopScreen(), FakestoreScreen(), CartScreen()];
+  List<Widget> screen = [LabtopScreen(), FakestoreScreen(), LoginScreen()];
 
   @override
   Widget build(BuildContext context) {
